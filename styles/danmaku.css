@@ -1,0 +1,246 @@
+/* ========================================
+   YouTube Danmaku Translator - Styles
+   ======================================== */
+
+/* ---- Inline translation below danmaku messages ---- */
+.dt-translation {
+  display: block;
+  font-size: 11px;
+  color: #ffcc00 !important;
+  padding: 2px 6px;
+  margin-top: 2px;
+  border-left: 2px solid #ffcc00;
+  padding-left: 6px;
+  opacity: 0.9;
+  line-height: 1.4;
+  max-width: 100%;
+  word-break: break-word;
+  white-space: normal;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Override for dark YouTube theme */
+yt-live-chat-text-message-renderer .dt-translation,
+yt-live-chat-replay-message-renderer .dt-translation {
+  margin-left: 4px;
+}
+
+/* ---- Floating Panel ---- */
+#dt-floating-panel {
+  position: fixed;
+  z-index: 99999;
+  bottom: 100px;
+  right: 20px;
+  width: 280px;
+  background: #1a1a2e;
+  border: 1px solid #3a3a5e;
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  color: #e0e0e0;
+  font-size: 13px;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+/* ---- Panel Header (draggable handle) ---- */
+#dt-panel-header {
+  padding: 8px 14px;
+  background: #16213e;
+  cursor: move;
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: #a0c4ff;
+  letter-spacing: 0.3px;
+}
+
+#dt-panel-header span {
+  pointer-events: none;
+}
+
+.dt-header-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.dt-header-btn {
+  background: none;
+  border: none;
+  color: #8899aa;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.dt-header-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Panel Body ---- */
+#dt-panel-body {
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#dt-panel-body.dt-collapsed {
+  display: none;
+}
+
+/* ---- Input Textarea ---- */
+#dt-input {
+  width: 100%;
+  min-height: 56px;
+  max-height: 120px;
+  background: #0f0f23;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 13px;
+  padding: 8px 10px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+#dt-input:focus {
+  border-color: #4a90d9;
+}
+
+#dt-input::placeholder {
+  color: #5a5a7a;
+}
+
+/* ---- Controls Row ---- */
+#dt-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#dt-target-lang {
+  flex: 1;
+  background: #0f0f23;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 12px;
+  padding: 6px 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+#dt-target-lang:focus {
+  border-color: #4a90d9;
+}
+
+#dt-translate-btn {
+  padding: 6px 14px;
+  background: #4a90d9;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+#dt-translate-btn:hover {
+  background: #3a7bc8;
+}
+
+#dt-translate-btn:active {
+  background: #2d6ab5;
+}
+
+/* ---- Translation Output ---- */
+#dt-translation-output {
+  min-height: 24px;
+  padding: 8px 10px;
+  background: rgba(255, 204, 0, 0.08);
+  border: 1px solid rgba(255, 204, 0, 0.2);
+  border-radius: 6px;
+  color: #ffcc00;
+  font-size: 13px;
+  word-break: break-word;
+  display: none;
+}
+
+#dt-translation-output.dt-visible {
+  display: block;
+}
+
+#dt-translation-output .dt-error {
+  color: #ff6b6b;
+}
+
+/* ---- Send Button ---- */
+#dt-send-btn {
+  width: 100%;
+  padding: 8px;
+  background: #e74c3c;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#dt-send-btn:hover {
+  background: #c0392b;
+}
+
+#dt-send-btn:active {
+  background: #a93226;
+}
+
+#dt-send-btn:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+/* ---- Tooltip display mode ---- */
+.dt-translation.dt-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  background: #1a1a2e;
+  border: 1px solid #3a3a5e;
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 10;
+  white-space: nowrap;
+  max-width: 300px;
+}
+
+yt-live-chat-text-message-renderer:hover .dt-translation.dt-tooltip,
+yt-live-chat-replay-message-renderer:hover .dt-translation.dt-tooltip {
+  display: block;
+}
+
+/* ---- Replace display mode ---- */
+.dt-translation.dt-replace {
+  color: #ffcc00 !important;
+}
+
+.dt-translation.dt-replace ~ #message,
+.dt-translation.dt-replace ~ #content {
+  display: none;
+}

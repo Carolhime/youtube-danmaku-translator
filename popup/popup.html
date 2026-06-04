@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Danmaku Translator</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="popup-header">
+      <h1>Danmaku Translator</h1>
+      <span class="version">v1.0</span>
+    </div>
+
+    <div class="setting-group">
+      <label for="setting-enabled" class="toggle-label">
+        <span>Enable Translation</span>
+        <input type="checkbox" id="setting-enabled" checked>
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-group">
+      <label for="setting-api">Translation API</label>
+      <select id="setting-api">
+        <option value="google">Google Translate (Free)</option>
+        <option value="mymemory">MyMemory (Free)</option>
+        <option value="libretranslate">LibreTranslate (Free)</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="setting-target-lang">Target Language</label>
+      <select id="setting-target-lang"></select>
+    </div>
+
+    <div class="setting-group">
+      <label for="setting-display-mode">Display Mode</label>
+      <select id="setting-display-mode">
+        <option value="inline">Inline (below original)</option>
+        <option value="tooltip">Tooltip (on hover)</option>
+        <option value="replace">Replace original</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="setting-font-size">Font Size: <span id="font-size-value">11px</span></label>
+      <input type="range" id="setting-font-size" min="8" max="18" value="11" step="1">
+    </div>
+
+    <div class="popup-footer">
+      <button id="reset-btn">Reset to Defaults</button>
+      <span id="status-msg"></span>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
