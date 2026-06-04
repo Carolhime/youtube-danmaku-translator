@@ -12,7 +12,7 @@
   // ---- Settings ----
   let settings = {
     api: 'google',
-    targetLang: 'en',
+    targetLang: 'zh-CN',
     enabled: true,
     panelCollapsed: false,
     panelX: null,
@@ -99,9 +99,9 @@
     if (!select) return;
 
     const langs = [
-      { code: 'en',    name: 'English' },
       { code: 'zh-CN', name: 'Chinese (Simp.)' },
       { code: 'zh-TW', name: 'Chinese (Trad.)' },
+      { code: 'en',    name: 'English' },
       { code: 'ja',    name: 'Japanese' },
       { code: 'ko',    name: 'Korean' },
       { code: 'es',    name: 'Spanish' },

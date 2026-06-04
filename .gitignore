@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Extension packed files
+*.crx
+*.pem
+
+# ZIP archives
+*.zip
+
+# Logs
+*.log

@@ -35,7 +35,7 @@ async function handleTranslate(message, sendResponse) {
   try {
     const result = await self.translate(
       text,
-      targetLang || 'en',
+      targetLang || 'zh-CN',
       api || 'google',
       sourceLang || 'auto'
     );

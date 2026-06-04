@@ -1,9 +1,9 @@
 // YouTube Danmaku Translator - Popup Settings
 
 const LANGUAGES = [
-  { code: 'en',    name: 'English' },
   { code: 'zh-CN', name: 'Chinese (Simplified)' },
   { code: 'zh-TW', name: 'Chinese (Traditional)' },
+  { code: 'en',    name: 'English' },
   { code: 'ja',    name: 'Japanese' },
   { code: 'ko',    name: 'Korean' },
   { code: 'es',    name: 'Spanish' },
@@ -25,7 +25,7 @@ const LANGUAGES = [
 
 const DEFAULTS = {
   api: 'google',
-  targetLang: 'en',
+  targetLang: 'zh-CN',
   enabled: true,
   displayMode: 'inline',
   fontSize: 11,

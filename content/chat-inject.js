@@ -19,7 +19,7 @@
   // ---- Configuration (synced from storage) ----
   let settings = {
     api: 'google',
-    targetLang: 'en',
+    targetLang: 'zh-CN',
     enabled: true,
     displayMode: 'inline',
     fontSize: 11
