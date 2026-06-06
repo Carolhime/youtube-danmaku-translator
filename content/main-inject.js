@@ -73,7 +73,7 @@
           <button id="dt-translate-btn">Translate</button>
         </div>
         <div id="dt-translation-output"></div>
-        <button id="dt-send-btn" disabled>Send to Chat</button>
+        <button id="dt-copy-btn" disabled>Copy</button>
       </div>
     `;
 
@@ -145,7 +145,7 @@
     document.getElementById('dt-minimize-btn').addEventListener('click', () => togglePanel());
     document.getElementById('dt-close-btn').addEventListener('click', hidePanel);
     document.getElementById('dt-translate-btn').addEventListener('click', translateUserInput);
-    document.getElementById('dt-send-btn').addEventListener('click', sendToChat);
+    document.getElementById('dt-copy-btn').addEventListener('click', copyToClipboard);
 
     // Enter key in textarea for quick translate
     document.getElementById('dt-input').addEventListener('keydown', (e) => {
@@ -161,7 +161,7 @@
       // Clear previous translation
       const output = document.getElementById('dt-translation-output');
       output.classList.remove('dt-visible');
-      document.getElementById('dt-send-btn').disabled = true;
+      document.getElementById('dt-copy-btn').disabled = true;
     });
   }
 
@@ -303,7 +303,7 @@
   function translateUserInput() {
     const input = document.getElementById('dt-input');
     const output = document.getElementById('dt-translation-output');
-    const sendBtn = document.getElementById('dt-send-btn');
+    const copyBtn = document.getElementById('dt-copy-btn');
     const translateBtn = document.getElementById('dt-translate-btn');
     const text = input.value.trim();
 
@@ -339,109 +339,43 @@
         if (response && response.success) {
           output.textContent = response.translatedText;
           output.classList.remove('dt-error');
-          sendBtn.disabled = false;
+          copyBtn.disabled = false;
 
-          // Store translated text for sending
+          // Store translated text for copying
           output.setAttribute('data-translated-text', response.translatedText);
         } else {
           output.textContent = 'Translation failed: ' + (response?.error || 'Unknown error');
           output.classList.add('dt-error');
-          sendBtn.disabled = true;
+          copyBtn.disabled = true;
         }
       }
     );
   }
 
-  // ---- Send to YouTube Chat ----
-  function sendToChat() {
+  // ---- Copy to Clipboard ----
+  function copyToClipboard() {
     const output = document.getElementById('dt-translation-output');
     const translatedText = output.getAttribute('data-translated-text');
 
     if (!translatedText) return;
 
-    // Try to find the YouTube chat input
-    // YouTube chat input is a contenteditable div inside various containers
-    const inputSelectors = [
-      '#input-panel #input',
-      'yt-live-chat-message-input-renderer #input',
-      '#input.yt-live-chat-message-input-renderer',
-      'div#input[contenteditable]',
-      'yt-live-chat-message-input-renderer div#input',
-      '#chat-input',
-      '#input-panel yt-live-chat-message-input-renderer #input'
-    ];
-
-    let chatInput = null;
-    for (const selector of inputSelectors) {
-      chatInput = document.querySelector(selector);
-      if (chatInput) break;
-    }
-
-    if (!chatInput) {
-      // Try finding by contenteditable attribute
-      const editables = document.querySelectorAll('[contenteditable="true"]');
-      for (const el of editables) {
-        if (el.closest('#input-panel') || el.closest('yt-live-chat-message-input-renderer')) {
-          chatInput = el;
-          break;
-        }
-      }
-    }
-
-    if (!chatInput) {
-      alert('Cannot find YouTube chat input. Make sure the chat panel is open.');
-      return;
-    }
-
-    // Set text (YouTube uses contenteditable div)
-    chatInput.focus();
-    chatInput.textContent = translatedText;
-
-    // Dispatch input event (YouTube/React listens for this)
-    chatInput.dispatchEvent(new InputEvent('input', {
-      bubbles: true,
-      cancelable: true,
-      inputType: 'insertText',
-      data: translatedText
-    }));
-
-    // Find and click send button
-    setTimeout(() => {
-      const sendSelectors = [
-        '#send-button button',
-        'yt-live-chat-message-input-renderer #send-button button',
-        '#send-button yt-icon-button',
-        '#send-button',
-        'button[aria-label="Send"]',
-        'yt-live-chat-message-input-renderer yt-icon-button#send-button'
-      ];
-
-      let sendBtn = null;
-      for (const selector of sendSelectors) {
-        sendBtn = document.querySelector(selector);
-        if (sendBtn) break;
-      }
-
-      if (!sendBtn) {
-        // Try finding by common send button patterns
-        const buttons = document.querySelectorAll('#input-panel button, yt-live-chat-message-input-renderer button');
-        for (const btn of buttons) {
-          if (btn.getAttribute('aria-label')?.toLowerCase().includes('send')) {
-            sendBtn = btn;
-            break;
-          }
-        }
-      }
-
-      if (sendBtn) {
-        sendBtn.click();
-      }
-
-      // Clear input
-      document.getElementById('dt-input').value = '';
-      document.getElementById('dt-translation-output').classList.remove('dt-visible');
-      document.getElementById('dt-send-btn').disabled = true;
-    }, 100);
+    navigator.clipboard.writeText(translatedText).then(() => {
+      const copyBtn = document.getElementById('dt-copy-btn');
+      const originalText = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      copyBtn.style.background = '#1e8449';
+      setTimeout(() => {
+        copyBtn.textContent = originalText;
+        copyBtn.style.background = '';
+      }, 1500);
+    }).catch(() => {
+      // Fallback: select text so user can copy manually
+      const range = document.createRange();
+      range.selectNodeContents(output);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    });
   }
 
   console.log('[DT] Main inject script loaded');

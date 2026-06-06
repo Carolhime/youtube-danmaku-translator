@@ -6,10 +6,11 @@
 .dt-translation {
   display: block;
   font-size: 11px;
-  color: #ffcc00 !important;
+  color: #bf80ff !important;
   padding: 2px 6px;
   margin-top: 2px;
-  border-left: 2px solid #ffcc00;
+  border-left: 2px solid #bf80ff;
+  user-select: text;
   padding-left: 6px;
   opacity: 0.9;
   line-height: 1.4;
@@ -171,13 +172,14 @@ yt-live-chat-replay-message-renderer .dt-translation {
 #dt-translation-output {
   min-height: 24px;
   padding: 8px 10px;
-  background: rgba(255, 204, 0, 0.08);
-  border: 1px solid rgba(255, 204, 0, 0.2);
+  background: rgba(191, 128, 255, 0.08);
+  border: 1px solid rgba(191, 128, 255, 0.2);
   border-radius: 6px;
-  color: #ffcc00;
+  color: #bf80ff;
   font-size: 13px;
   word-break: break-word;
   display: none;
+  user-select: text;
 }
 
 #dt-translation-output.dt-visible {
@@ -188,11 +190,11 @@ yt-live-chat-replay-message-renderer .dt-translation {
   color: #ff6b6b;
 }
 
-/* ---- Send Button ---- */
-#dt-send-btn {
+/* ---- Copy Button ---- */
+#dt-copy-btn {
   width: 100%;
   padding: 8px;
-  background: #e74c3c;
+  background: #27ae60;
   border: none;
   border-radius: 6px;
   color: #fff;
@@ -202,15 +204,15 @@ yt-live-chat-replay-message-renderer .dt-translation {
   transition: background 0.2s;
 }
 
-#dt-send-btn:hover {
-  background: #c0392b;
+#dt-copy-btn:hover {
+  background: #219a52;
 }
 
-#dt-send-btn:active {
-  background: #a93226;
+#dt-copy-btn:active {
+  background: #1e8449;
 }
 
-#dt-send-btn:disabled {
+#dt-copy-btn:disabled {
   background: #555;
   cursor: not-allowed;
 }
@@ -237,7 +239,7 @@ yt-live-chat-replay-message-renderer:hover .dt-translation.dt-tooltip {
 
 /* ---- Replace display mode ---- */
 .dt-translation.dt-replace {
-  color: #ffcc00 !important;
+  color: #bf80ff !important;
 }
 
 .dt-translation.dt-replace ~ #message,
