@@ -5,6 +5,12 @@
 (function () {
   'use strict';
 
+  // Guard against missing chrome.runtime (extension not loaded / page not refreshed)
+  if (typeof chrome === 'undefined' || !chrome.runtime) {
+    console.warn('[DT] chrome.runtime not available');
+    return;
+  }
+
   // Only run in chat iframe context
   const isChatFrame =
     window.location.href.includes('/live_chat') ||
@@ -203,7 +209,7 @@
   }
 
   function requestTranslation(text) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       chrome.runtime.sendMessage(
         {
           action: 'translate',
@@ -214,13 +220,15 @@
         },
         (response) => {
           if (chrome.runtime.lastError) {
-            reject(chrome.runtime.lastError);
+            // Runtime error: resolve with original so it never rejects
+            resolve(text);
             return;
           }
           if (response && response.success) {
             resolve(response.translatedText);
           } else {
-            reject(new Error(response?.error || 'Translation failed'));
+            // All APIs failed: resolve with original text as fallback
+            resolve(text);
           }
         }
       );

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YouTube Danmaku Translator",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Real-time translation of YouTube danmaku (live chat / chat replay) with bilingual display",
   "icons": {
     "16": "icons/icon16.png",
@@ -15,7 +15,8 @@
     "*://www.youtube.com/*",
     "*://translate.googleapis.com/*",
     "*://api.mymemory.translated.net/*",
-    "*://libretranslate.com/*"
+    "*://libretranslate.com/*",
+    "*://elephant.browser.360.cn/*"
   ],
   "background": {
     "service_worker": "background/service-worker.js"
@@ -39,5 +40,11 @@
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "Danmaku Translator"
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["*://www.youtube.com/*"]
+    }
+  ]
 }

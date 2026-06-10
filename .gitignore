@@ -18,5 +18,10 @@ Thumbs.db
 # ZIP archives
 *.zip
 
+# Logo source files (only icons/ are needed)
+Danmaku.ico
+Danmaku.png
+Danmaku_no_bg.png
+
 # Logs
 *.log

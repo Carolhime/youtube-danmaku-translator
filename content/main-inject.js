@@ -9,6 +9,13 @@
   if (window.__dt_panel_loaded) return;
   window.__dt_panel_loaded = true;
 
+  // Guard against missing chrome.runtime (extension not loaded / page not refreshed)
+  if (typeof chrome === 'undefined' || !chrome.runtime) {
+    console.warn('[DT] chrome.runtime not available, retrying...');
+    setTimeout(() => location.reload(), 2000);
+    return;
+  }
+
   // ---- Settings ----
   let settings = {
     api: 'google',
@@ -269,15 +276,14 @@
     // Show a small restore button
     let restoreBtn = document.getElementById('dt-restore-btn');
     if (!restoreBtn) {
-      restoreBtn = document.createElement('button');
+      restoreBtn = document.createElement('img');
       restoreBtn.id = 'dt-restore-btn';
-      restoreBtn.textContent = 'DT';
+      restoreBtn.src = chrome.runtime.getURL('icons/icon48.png');
       restoreBtn.title = 'Show Danmaku Translator';
       restoreBtn.style.cssText = `
         position: fixed; z-index: 99999; bottom: 20px; right: 20px;
         width: 40px; height: 40px; border-radius: 50%;
-        background: #4a90d9; color: #fff; border: none;
-        font-weight: bold; font-size: 12px; cursor: pointer;
+        cursor: pointer; object-fit: cover;
         box-shadow: 0 2px 12px rgba(0,0,0,0.5);
       `;
       restoreBtn.addEventListener('click', showPanel);
