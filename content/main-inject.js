@@ -18,7 +18,8 @@
 
   // ---- Settings ----
   let settings = {
-    api: 'google',
+    api: 'index-translate',
+    indexEndpoint: '',
     targetLang: 'zh-CN',
     enabled: true,
     panelCollapsed: false,
@@ -324,38 +325,62 @@
     output.textContent = 'Translating...';
     output.classList.remove('dt-error');
 
-    chrome.runtime.sendMessage(
-      {
-        action: 'translate',
-        text: text,
-        sourceLang: 'auto',
-        targetLang: targetLang,
-        api: settings.api
-      },
-      (response) => {
-        translateBtn.disabled = false;
-        translateBtn.textContent = 'Translate';
+    requestTranslation(text, targetLang).then((response) => {
+      translateBtn.disabled = false;
+      translateBtn.textContent = 'Translate';
 
-        if (chrome.runtime.lastError) {
-          output.textContent = 'Error: ' + chrome.runtime.lastError.message;
-          output.classList.add('dt-error');
-          return;
-        }
+      if (response && response.success) {
+        output.textContent = response.translatedText;
+        output.classList.remove('dt-error');
+        copyBtn.disabled = false;
 
-        if (response && response.success) {
-          output.textContent = response.translatedText;
-          output.classList.remove('dt-error');
-          copyBtn.disabled = false;
-
-          // Store translated text for copying
-          output.setAttribute('data-translated-text', response.translatedText);
-        } else {
-          output.textContent = 'Translation failed: ' + (response?.error || 'Unknown error');
-          output.classList.add('dt-error');
-          copyBtn.disabled = true;
-        }
+        // Store translated text for copying
+        output.setAttribute('data-translated-text', response.translatedText);
+      } else {
+        output.textContent = 'Translation failed: ' + ((response && response.error) || 'Unknown error');
+        output.classList.add('dt-error');
+        copyBtn.disabled = true;
       }
-    );
+    });
+  }
+
+  // Index-Translate runs in the page context on purpose: the free public gateway
+  // rejects requests originating from the extension itself (HTTP 412).
+  function requestTranslation(text, targetLang) {
+    if (typeof self.isIndexTranslateApi === 'function' && self.isIndexTranslateApi(settings.api)) {
+      return self.indexTranslate(text, targetLang, 'auto', {
+        api: settings.api,
+        endpoint: settings.indexEndpoint
+      }).catch((err) => {
+        console.warn('[DT] Index-Translate unavailable, falling back to other APIs:', err.message);
+        return requestViaServiceWorker(text, targetLang);
+      });
+    }
+
+    return requestViaServiceWorker(text, targetLang);
+  }
+
+  function requestViaServiceWorker(text, targetLang) {
+    return new Promise((resolve) => {
+      chrome.runtime.sendMessage(
+        {
+          action: 'translate',
+          text: text,
+          sourceLang: 'auto',
+          targetLang: targetLang,
+          // The service worker has no Index-Translate case: it runs its normal
+          // failover chain (Google -> MyMemory -> LibreTranslate -> Youdao).
+          api: settings.api
+        },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            resolve({ success: false, error: chrome.runtime.lastError.message, translatedText: text });
+            return;
+          }
+          resolve(response || { success: false, error: 'No response from translation service', translatedText: text });
+        }
+      );
+    });
   }
 
   // ---- Copy to Clipboard ----

@@ -24,7 +24,8 @@ const LANGUAGES = [
 ];
 
 const DEFAULTS = {
-  api: 'google',
+  api: 'index-translate',
+  indexEndpoint: '',
   targetLang: 'zh-CN',
   enabled: true,
   displayMode: 'inline',
@@ -33,6 +34,21 @@ const DEFAULTS = {
   panelX: null,
   panelY: null
 };
+
+// Base URLs used when the optional endpoint field is left blank.
+const INDEX_ENDPOINT_PRESETS = {
+  'index-translate': 'https://index-translate.bilibili.com/v1',
+  'index-translate-proxy': 'http://127.0.0.1:8080/v1'
+};
+
+const INDEX_ENDPOINT_HINTS = {
+  'index-translate': 'Calls the free bilibili gateway straight from the page. No setup needed.',
+  'index-translate-proxy': 'Requires the local bridge: python inference/llm/call_api.py --serve'
+};
+
+function isIndexTranslateApi(api) {
+  return api === 'index-translate' || api === 'index-translate-proxy';
+}
 
 let currentSettings = { ...DEFAULTS };
 
@@ -68,6 +84,21 @@ function applySettingsToForm() {
   document.getElementById('setting-display-mode').value = currentSettings.displayMode;
   document.getElementById('setting-font-size').value = currentSettings.fontSize;
   document.getElementById('font-size-value').textContent = currentSettings.fontSize + 'px';
+  document.getElementById('setting-index-endpoint').value = currentSettings.indexEndpoint || '';
+  updateIndexEndpointField();
+}
+
+function updateIndexEndpointField() {
+  const api = currentSettings.api;
+  const active = isIndexTranslateApi(api);
+  const input = document.getElementById('setting-index-endpoint');
+  const hint = document.getElementById('index-endpoint-hint');
+
+  document.getElementById('index-endpoint-group').hidden = !active;
+  if (!active) return;
+
+  input.placeholder = INDEX_ENDPOINT_PRESETS[api] || '';
+  hint.textContent = INDEX_ENDPOINT_HINTS[api] || '';
 }
 
 function wireEvents() {
@@ -79,6 +110,13 @@ function wireEvents() {
 
   document.getElementById('setting-api').addEventListener('change', function () {
     currentSettings.api = this.value;
+    updateIndexEndpointField();
+    saveSettings();
+  });
+
+  document.getElementById('setting-index-endpoint').addEventListener('change', function () {
+    currentSettings.indexEndpoint = this.value.trim();
+    this.value = currentSettings.indexEndpoint;
     saveSettings();
   });
 

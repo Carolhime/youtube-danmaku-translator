@@ -6,7 +6,8 @@
 
 - **实时弹幕翻译** — 自动检测并翻译 YouTube 聊天消息
 - **双语内嵌显示** — 翻译结果以紫色文字直接显示在原弹幕下方
-- **多个免费翻译 API** — 支持 Google 翻译、MyMemory、LibreTranslate，自动故障切换
+- **Index-Translate 免费 API** — 默认接入 B站开源 [Index-Translate](https://github.com/bilibili/Index-Translate) 免费公网 API
+- **多个免费翻译 API** — 同时支持 Google 翻译、MyMemory、LibreTranslate，自动故障切换
 - **悬浮输入面板** — 可拖拽的悬浮窗，输入弹幕并翻译后一键复制到剪贴板
 - **一键复制** — 翻译完成后点击 Copy 即可复制翻译结果
 
@@ -31,6 +32,42 @@
 - 视频回放中的聊天回放（Chat Replay）
 
 
+### Index-Translate 免费 API
+
+扩展默认使用 B站开源的 [Index-Translate](https://github.com/bilibili/Index-Translate) 免费公网 API（模型 `Index-Translate-35B-A3B`），**无需 API Key、无需 GPU**。
+
+在设置弹窗的 **Translation API** 里可以选两种接法：
+
+| 选项 | 说明 | 需要额外准备 |
+|---|---|---|
+| **Index-Translate (Free, direct)** | 由页面直接请求 `https://index-translate.bilibili.com/v1` | 无，装好扩展即可 |
+| **Index-Translate (Local proxy)** | 请求本地网桥 `http://127.0.0.1:8080/v1` | 需要先在本地启动网桥 |
+
+> **为什么不在扩展后台（service worker）里直连公网网关？**
+> 公网网关会拒绝来源为浏览器扩展的请求（`Origin: chrome-extension://` → HTTP 412）。
+> 因此弹幕翻译和悬浮面板翻译都在**页面上下文**中发起请求，而不是在 service worker 里。
+
+**方式一：直连（推荐，零配置）**
+
+装好扩展即可用，默认就是它，不需要安装任何额外软件。
+
+**方式二：本地代理网桥**
+
+适合需要本地统一注入参数，或页面直连不稳定时使用：
+
+```bash
+git clone https://github.com/bilibili/Index-Translate
+cd Index-Translate
+python inference/llm/call_api.py --serve
+```
+
+网桥启动后监听 `127.0.0.1:8080`，在扩展设置里把 **Translation API** 切到
+**Index-Translate (Local proxy)** 即可。网桥会自动透传 CORS，并注入
+`enable_thinking=false`、`temperature=0.0`。
+
+**自定义地址**：只要选中任一 Index-Translate 选项，设置里就会出现 **Index-Translate URL**
+输入框；填了就覆盖上面的预设地址（例如指向自建的 vLLM 网关）。
+
 ### 悬浮输入面板
 
 页面右下角会显示一个深色的悬浮窗，你可以：
@@ -52,7 +89,8 @@
 | 设置项 | 说明 | 默认值 |
 |---|---|---|
 | **启用翻译** | 开关弹幕翻译功能 | 开启 |
-| **翻译 API** | Google 翻译 / MyMemory / LibreTranslate |
+| **翻译 API** | Index-Translate（直连 / 本地代理）/ Google 翻译 / MyMemory / LibreTranslate | Index-Translate（直连） |
+| **Index-Translate URL** | 自定义服务地址，仅在选择 Index-Translate 时显示；留空则用预设地址 | 留空 |
 | **目标语言** | 弹幕和用户输入翻译的目标语言 | 简体中文 |
 | **显示模式** | 内嵌（原文下方）/ 悬停提示 / 替换原文 | 内嵌 |
 | **字体大小** | 翻译文字大小（8–18px） | 11px |
@@ -67,6 +105,8 @@
 
 | API | 优点 | 限制 |
 |---|---|---|
+| **Index-Translate（默认）** | B站开源模型，翻译质量高，支持 150 种语言 | 免费公网端点有频率限制，偶发不稳定 |
+| **Index-Translate（本地代理）** | 参数可控、可接入本地 vLLM，不受公网限流影响 | 需要本地运行网桥 |
 | **Google 翻译** | 质量高、速度快、支持语言多 | 免费端点可能有频率限制 |
 | **MyMemory** | 无需 API Key、稳定 | 单次最多 500 字符、有每日配额 |
 | **LibreTranslate** | 开源、注重隐私 | 公共实例可能不稳定 |
@@ -76,6 +116,7 @@
 ## 技术栈
 
 - 纯原生 JavaScript，零外部依赖
+- Index-Translate 走页面上下文请求（规避公网网关对扩展来源的 412 拦截）
 - Chrome Extension Manifest V3
 - 双 Content Script 架构（聊天 iframe + 主页面）
 - MutationObserver 实时消息检测
@@ -90,10 +131,11 @@
 ├── content/
 │   ├── chat-inject.js            # 弹幕翻译脚本（注入聊天 iframe）
 │   └── main-inject.js            # 悬浮面板脚本（注入主页面）
+│   （两个脚本都会先加载 lib/translator.js，在页面上下文里调用 Index-Translate）
 ├── popup/
 │   ├── popup.html / js / css     # 扩展设置弹窗
 ├── lib/
-│   ├── translator.js             # 3 个翻译 API + 缓存 + 故障切换
+│   ├── translator.js             # 各翻译 API（含 Index-Translate）+ 缓存 + 故障切换
 │   └── utils.js                  # 语言列表 + 工具函数
 ├── styles/
 │   └── danmaku.css               # 翻译样式 + 面板样式
@@ -113,11 +155,21 @@
 - 尝试在设置中切换不同的翻译 API
 - Google 翻译通常质量最高
 
+**Q: 选了 Index-Translate 但翻译没出现？**
+- 公网免费端点偶尔限流，稍等几秒或刷新 YouTube 页面重试
+- 确认扩展版本为 v1.3.0 或更高（在 `chrome://extensions` 里点重新加载）
+- 如果当前网络访问不了 `index-translate.bilibili.com`，可改用本地代理方式
+- 选中 Index-Translate 后的失败会自动回退到其它免费 API，不会让弹幕卡住
+
 **Q: 悬浮面板不见了？**
 - 点击右下角的 Logo 图标恢复面板
 - 如果图标也不在，刷新页面即可
 
 ## 更新日志
+
+### v1.3.0
+- 新增 B站 Index-Translate 免费 API 并设为默认（直连 / 本地代理两种接法）
+- 支持自定义 Index-Translate 服务地址
 
 ### v1.1.0
 - 翻译文字颜色由黄色改为紫色

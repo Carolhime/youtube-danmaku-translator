@@ -161,3 +161,33 @@ body {
 #status-msg.visible {
   opacity: 1;
 }
+
+/* ---- Text Input (Index-Translate URL) ---- */
+.setting-group input[type="text"] {
+  width: 100%;
+  padding: 7px 10px;
+  background: #0f0f23;
+  border: 1px solid #3a3a5e;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 11px;
+  font-family: 'Consolas', 'Menlo', monospace;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.setting-group input[type="text"]:focus {
+  border-color: #4a90d9;
+}
+
+.setting-group input[type="text"]::placeholder {
+  color: #5a5a7a;
+}
+
+.setting-hint {
+  margin-top: 5px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #6a7a8a;
+  word-break: break-word;
+}

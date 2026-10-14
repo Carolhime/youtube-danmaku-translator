@@ -10,7 +10,7 @@
   <div class="popup-container">
     <div class="popup-header">
       <h1>Danmaku Translator</h1>
-      <span class="version">v1.2</span>
+      <span class="version">v1.3</span>
     </div>
 
     <div class="setting-group">
@@ -24,11 +24,20 @@
     <div class="setting-group">
       <label for="setting-api">Translation API</label>
       <select id="setting-api">
+        <option value="index-translate">Index-Translate (Free, direct)</option>
+        <option value="index-translate-proxy">Index-Translate (Local proxy)</option>
         <option value="google">Google Translate (Free)</option>
         <option value="youdao">Youdao (Free)</option>
         <option value="mymemory">MyMemory (Free)</option>
         <option value="libretranslate">LibreTranslate (Free)</option>
       </select>
+    </div>
+
+    <div class="setting-group" id="index-endpoint-group">
+      <label for="setting-index-endpoint">Index-Translate URL</label>
+      <input type="text" id="setting-index-endpoint" spellcheck="false" autocomplete="off"
+             placeholder="https://index-translate.bilibili.com/v1">
+      <p class="setting-hint" id="index-endpoint-hint"></p>
     </div>
 
     <div class="setting-group">

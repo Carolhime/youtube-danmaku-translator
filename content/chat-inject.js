@@ -24,7 +24,8 @@
 
   // ---- Configuration (synced from storage) ----
   let settings = {
-    api: 'google',
+    api: 'index-translate',
+    indexEndpoint: '',
     targetLang: 'zh-CN',
     enabled: true,
     displayMode: 'inline',
@@ -209,6 +210,23 @@
   }
 
   function requestTranslation(text) {
+    // Index-Translate is called from the page context on purpose: the free public
+    // gateway rejects requests originating from the extension itself
+    // (Origin: chrome-extension:// -> HTTP 412).
+    if (typeof self.isIndexTranslateApi === 'function' && self.isIndexTranslateApi(settings.api)) {
+      return self.indexTranslate(text, settings.targetLang, 'auto', {
+        api: settings.api,
+        endpoint: settings.indexEndpoint
+      }).then((result) => result.translatedText).catch((err) => {
+        console.warn('[DT] Index-Translate unavailable, falling back to other APIs:', err.message);
+        return requestViaServiceWorker(text);
+      });
+    }
+
+    return requestViaServiceWorker(text);
+  }
+
+  function requestViaServiceWorker(text) {
     return new Promise((resolve) => {
       chrome.runtime.sendMessage(
         {
@@ -216,6 +234,8 @@
           text: text,
           sourceLang: 'auto',
           targetLang: settings.targetLang,
+          // The service worker has no Index-Translate case: it runs its normal
+          // failover chain (Google -> MyMemory -> LibreTranslate -> Youdao).
           api: settings.api
         },
         (response) => {
